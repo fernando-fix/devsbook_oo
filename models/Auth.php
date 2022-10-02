@@ -5,18 +5,20 @@ class Auth {
 
     private $pdo;
     private $base;
+    private $dao;
 
     public function __construct(PDO $pdo, $base) {
         $this->pdo = $pdo;
         $this->base = $base;
+        $this->dao = new UserDaoMysql($this->pdo);
     }
     
     public function checkToken() {
         if(!empty($_SESSION['token'])) {
             $token = $_SESSION['token'];
 
-            $userDao = new UserDaoMysql($this->pdo);
-            $user = $userDao->findByToken($token);
+            $this->dao = new UserDaoMysql($this->pdo);
+            $user = $this->dao->findByToken($token);
             if($user) {
                 return $user;
             }
@@ -27,9 +29,8 @@ class Auth {
     }
 
     public function validateLogin($email, $password) {
-        $userDao = new UserDaoMysql($this->pdo);
-
-        $user = $userDao->findByEmail($email);
+        $this->dao = new UserDaoMysql($this->pdo);
+        $user = $this->dao->findByEmail($email);
 
         if($user) {
             if(password_verify($password, $user->password)) {
@@ -37,7 +38,7 @@ class Auth {
 
                 $_SESSION['token'] = $token;
                 $user->token = $token;
-                $userDao->update($user);
+                $this->dao->update($user);
 
                 return true;
             }
@@ -47,12 +48,12 @@ class Auth {
     }
 
     public function emailExists($email) {
-        $userDao = new UserDaoMysql($this->pdo);
-        return $userDao->findByEmail($email) ? true : false;
+        $this->dao = new UserDaoMysql($this->pdo);
+        return $this->dao->findByEmail($email) ? true : false;
     }
 
     public function registerUser($name, $email, $password, $birthdate) {
-        $userDao = new UserDaoMysql($this->pdo);
+        $this->dao = new UserDaoMysql($this->pdo);
         $newUser = new User();
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -64,7 +65,7 @@ class Auth {
         $newUser->birthdate = $birthdate;
         $newUser->token = $token;
 
-        $userDao->insert($newUser);
+        $this->dao->insert($newUser);
 
         $_SESSION['token'] = $token;
     }
