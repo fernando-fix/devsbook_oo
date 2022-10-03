@@ -32,13 +32,14 @@ class PostDaoMysql implements PostDao
 
         // 1.pegar a lista de usuarios que eu sigo
         $urDao = new UserRelationDaoMysql($this->pdo);
-        $userList = $urDao->getRelationsFrom($id_user);
+        $userList = $urDao->getFollowing($id_user);
+        $userList[] = $id_user;
 
         // 2.pegar os posts desses usuários ordenado pela data
-        $sql = $this->pdo->query("SELECT * FROM posts WHERE id_user IN (".implode(',', $userList).") ORDER BY created_at DESC");
-        if($sql->rowCount() > 0) {
+        $sql = $this->pdo->query("SELECT * FROM posts WHERE id_user IN (" . implode(',', $userList) . ") ORDER BY created_at DESC");
+        if ($sql->rowCount() > 0) {
             $data = $sql->fetchAll(PDO::FETCH_ASSOC);
-            
+
             // 3.transformar o resultado em objetos e exibir
             $array = $this->_postListToObject($data, $id_user);
         }
@@ -46,12 +47,45 @@ class PostDaoMysql implements PostDao
         return $array;
     }
 
-    private function _postListToObject($post_list, $id_user) {
+    public function getUserFeed($id_user)
+    {
+        $array = [];
+
+        $sql = $this->pdo->prepare("SELECT * FROM posts WHERE id_user = :id_user ORDER BY created_at DESC");
+        $sql->bindValue(':id_user', $id_user);
+        $sql->execute();
+        if ($sql->rowCount() > 0) {
+            $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $array = $this->_postListToObject($data, $id_user);
+        }
+
+        return $array;
+    }
+
+
+    public function getPhotosFrom($id_user)
+    {
+        $array = [];
+
+        $sql = $this->pdo->prepare("SELECT * FROM posts WHERE id_user = :id_user AND type = 'photo' ORDER BY created_at DESC");
+        $sql->bindValue(':id_user', $id_user);
+        $sql->execute();
+
+        if ($sql->rowCount() > 0) {
+            $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $array = $this->_postListToObject($data, $id_user);
+        }
+        return $array;
+    }
+
+
+    private function _postListToObject($post_list, $id_user)
+    {
         //3.1 retornar array com objetos
         $posts = [];
         $userDao = new UserDaoMysql($this->pdo);
 
-        foreach($post_list as $post_item) {
+        foreach ($post_list as $post_item) {
             $newPost = new Post();
             $newPost->id = $post_item['id'];
             $newPost->type = $post_item['type'];
@@ -59,7 +93,7 @@ class PostDaoMysql implements PostDao
             $newPost->body = $post_item['body'];
             $newPost->mine = false;
 
-            if($id_user == $post_item['id_user']) {
+            if ($id_user == $post_item['id_user']) {
                 $newPost->mine = true;
             }
 

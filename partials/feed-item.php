@@ -17,10 +17,10 @@ switch ($item->type) {
     <div class="box-body">
         <div class="feed-item-head row mt-20 m-width-20">
             <div class="feed-item-head-photo">
-                <a href="<?= $base; ?>/perfil.php?id=<?= $item->user->id; ?>/"><img src="<?= $base; ?>/media/avatars/<?= $item->user->avatar; ?>" /></a>
+                <a href="<?= $base; ?>/perfil.php?id=<?= $item->user->id; ?>"><img src="<?= $base; ?>/media/avatars/<?= $item->user->avatar; ?>" /></a>
             </div>
             <div class="feed-item-head-info">
-                <a href="<?= $base; ?>/perfil.php?id=<?= $item->user->id; ?>/"><span class="fidi-name"><?= $item->user->name; ?></span></a>
+                <a href="<?= $base; ?>/perfil.php?id=<?= $item->user->id; ?>"><span class="fidi-name"><?= $item->user->name; ?></span></a>
                 <span class="fidi-action"><?= $actionPhrase; ?></span>
                 <br />
                 <span class="fidi-date"><?= date('d/m/Y', strtotime($item->created_at)); ?></span>
