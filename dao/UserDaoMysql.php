@@ -5,14 +5,17 @@ require_once 'dao/UserRelationDaoMysql.php';
 require_once 'dao/PostDaoMysql.php';
 
 
-class UserDaoMysql implements UserDao {
+class UserDaoMysql implements UserDao
+{
     private $pdo;
 
-    public function __construct(PDO $driver) {
+    public function __construct(PDO $driver)
+    {
         $this->pdo = $driver;
     }
 
-    private function generateUser($array, $full = false) {
+    private function generateUser($array, $full = false)
+    {
         $u = new User();
         $u->id = $array['id'] ?? 0;
         $u->email = $array['email'] ?? '';
@@ -25,18 +28,18 @@ class UserDaoMysql implements UserDao {
         $u->cover = $array['cover'] ?? '';
         $u->token = $array['token'] ?? '';
 
-        if($full) {
+        if ($full) {
             $postDaoMysql = new PostDaoMysql($this->pdo);
             $urDaoMySql = new UserRelationDaoMysql($this->pdo);
             // followers
             $u->followers = $urDaoMySql->getFollowers($u->id);
-            foreach($u->followers as $key => $followerId) {
+            foreach ($u->followers as $key => $followerId) {
                 $u->followers[$key] = $this->findById($followerId);
             }
 
             // following
             $u->following = $urDaoMySql->getFollowing($u->id);
-            foreach($u->following as $key => $followingId) {
+            foreach ($u->following as $key => $followingId) {
                 $u->following[$key] = $this->findById($followingId);
             }
 
@@ -47,12 +50,13 @@ class UserDaoMysql implements UserDao {
         return $u; //retorna objeto do usuário se o token for encontrado
     }
 
-    public function findByToken($token) {
+    public function findByToken($token)
+    {
         $sql = $this->pdo->prepare("SELECT * FROM users WHERE token = :token");
         $sql->bindValue(':token', $token);
         $sql->execute();
 
-        if($sql->rowCount() > 0) {
+        if ($sql->rowCount() > 0) {
             $data = $sql->fetch(PDO::FETCH_ASSOC);
             $user = $this->generateUser($data);
             return $user;
@@ -60,12 +64,13 @@ class UserDaoMysql implements UserDao {
         return false;
     }
 
-    public function findById($id, $full = false) {
+    public function findById($id, $full = false)
+    {
         $sql = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
         $sql->bindValue(':id', $id);
         $sql->execute();
 
-        if($sql->rowCount() > 0) {
+        if ($sql->rowCount() > 0) {
             $data = $sql->fetch(PDO::FETCH_ASSOC);
             $user = $this->generateUser($data, $full);
             return $user;
@@ -73,12 +78,13 @@ class UserDaoMysql implements UserDao {
         return false;
     }
 
-    public function findByEmail($email) {
+    public function findByEmail($email)
+    {
         $sql = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
         $sql->bindValue(':email', $email);
         $sql->execute();
 
-        if($sql->rowCount() > 0) {
+        if ($sql->rowCount() > 0) {
             $data = $sql->fetch(PDO::FETCH_ASSOC);
             $user = $this->generateUser($data);
             return $user;
@@ -86,7 +92,28 @@ class UserDaoMysql implements UserDao {
         return false;
     }
 
-    public function update(User $u) {
+    public function findByName($name)
+    {
+        $array = [];
+
+        if ($name) {
+            $sql = $this->pdo->prepare("SELECT * FROM users WHERE name LIKE :name");
+            $sql->bindValue(':name', '%' . $name . '%');
+            $sql->execute();
+
+            if ($sql->rowCount() > 0) {
+                $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($data as $item) {
+                    $array[] = $this->generateUser($item);
+                }
+            }
+        }
+
+        return $array;
+    }
+
+    public function update(User $u)
+    {
         $sql = $this->pdo->prepare("UPDATE users SET
         email = :email,
         password = :password,
@@ -114,7 +141,8 @@ class UserDaoMysql implements UserDao {
         return true;
     }
 
-    public function insert(User $u){
+    public function insert(User $u)
+    {
         $sql = $this->pdo->prepare("INSERT INTO users (
             email, password, name, birthdate, token
         ) VALUES (
