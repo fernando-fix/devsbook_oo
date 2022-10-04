@@ -7,7 +7,7 @@ require_once 'dao/UserDaoMysql.php';
 
 $auth = new Auth($pdo, $base);
 $userInfo = $auth->checkToken();
-$activeMenu = 'profile';
+$activeMenu = 'photos';
 
 $id = filter_input(INPUT_GET, 'id');
 if (!$id) {
@@ -153,13 +153,13 @@ require 'partials/menu.php';
                 <div class="box-body row m-20">
 
                     <?php if (count($user->photos) > 0) : ?>
-                        <?php foreach ($user->photos as $item) : ?>
+                        <?php foreach ($user->photos as $key => $item) : ?>
                             <div class="user-photo-item">
-                                <a href="#modal-1" rel="modal:open">
-                                    <img src="<?= $base; ?>/media/uploads/<?= $item->body;?>" />
+                                <a href="#modal-<?= $key; ?>" rel="modal:open">
+                                    <img src="<?= $base; ?>/media/uploads/<?= $item->body; ?>" />
                                 </a>
-                                <div id="modal-1" style="display:none">
-                                    <img src="<?= $base; ?>/media/uploads/<?= $item->body;?>" />
+                                <div id="modal-<?= $key; ?>" style="display:none">
+                                    <img src="<?= $base; ?>/media/uploads/<?= $item->body; ?>" />
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -168,7 +168,7 @@ require 'partials/menu.php';
             </div>
 
             <?php if ($id == $userInfo->id) : ?>
-            <?php require 'partials/feed-editor.php'; ?>
+                <?php require 'partials/feed-editor.php'; ?>
             <?php endif; ?>
 
             <?php if (count($feed) > 0) : ?>
