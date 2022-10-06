@@ -7,7 +7,7 @@ require_once 'dao/UserDaoMysql.php';
 
 $auth = new Auth($pdo, $base);
 $userInfo = $auth->checkToken();
-$activeMenu = 'photos';
+$activeMenu = 'profile';
 
 $id = filter_input(INPUT_GET, 'id');
 if (!$id) {

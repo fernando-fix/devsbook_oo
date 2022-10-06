@@ -37,11 +37,15 @@ class PostDaoMysql implements PostDao
 
         // 2.pegar os posts desses usuários ordenado pela data
         $sql = $this->pdo->query("SELECT * FROM posts WHERE id_user IN (" . implode(',', $userList) . ") ORDER BY created_at DESC");
-        if ($sql->rowCount() > 0) {
-            $data = $sql->fetchAll(PDO::FETCH_ASSOC);
 
-            // 3.transformar o resultado em objetos e exibir
-            $array = $this->_postListToObject($data, $id_user);
+        //verificar se o resultado é booleano
+        if(is_bool($sql->rowCount()) == false) {
+            if ($sql->rowCount() > 0) {
+                $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+                // 3.transformar o resultado em objetos e exibir
+                $array = $this->_postListToObject($data, $id_user);
+            }
         }
 
         return $array;
