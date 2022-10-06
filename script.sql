@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 29-Set-2022 às 18:16
+-- Tempo de geração: 06-Out-2022 às 03:19
 -- Versão do servidor: 10.4.21-MariaDB
 -- versão do PHP: 8.1.6
 
@@ -56,6 +56,7 @@ CREATE TABLE `postlikes` (
 
 CREATE TABLE `posts` (
   `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
   `type` varchar(20) NOT NULL,
   `created_at` datetime NOT NULL,
   `body` text NOT NULL
@@ -87,8 +88,8 @@ CREATE TABLE `users` (
   `birthdate` date NOT NULL,
   `city` varchar(100) NOT NULL,
   `work` varchar(100) NOT NULL,
-  `avatar` varchar(100) NOT NULL,
-  `cover` varchar(100) NOT NULL,
+  `avatar` varchar(100) NOT NULL DEFAULT 'default.jpg',
+  `cover` varchar(100) NOT NULL DEFAULT 'cover.jpg',
   `token` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -146,19 +147,19 @@ ALTER TABLE `postlikes`
 -- AUTO_INCREMENT de tabela `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `userrelations`
 --
 ALTER TABLE `userrelations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
