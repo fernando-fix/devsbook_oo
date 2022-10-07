@@ -2,6 +2,7 @@
 require_once 'models/Post.php';
 require_once 'dao/UserRelationDaoMysql.php';
 require_once 'dao/UserDaoMysql.php';
+require_once 'dao/PostLikeDaoMysql.php';
 
 class PostDaoMysql implements PostDao
 {
@@ -38,15 +39,12 @@ class PostDaoMysql implements PostDao
         // 2.pegar os posts desses usuários ordenado pela data
         $sql = $this->pdo->query("SELECT * FROM posts WHERE id_user IN (" . implode(',', $userList) . ") ORDER BY created_at DESC");
 
-        //verificar se o resultado é booleano
-        if(is_bool($sql->rowCount()) == false) {
-            if ($sql->rowCount() > 0) {
-                $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+        if ($sql->rowCount() > 0) {
+            $data = $sql->fetchAll(PDO::FETCH_ASSOC);
 
-                // 3.transformar o resultado em objetos e exibir
-                $array = $this->_postListToObject($data, $id_user);
-            }
-        }
+            // 3.transformar o resultado em objetos e exibir
+            $array = $this->_postListToObject($data, $id_user);
+        }      
 
         return $array;
     }
@@ -88,6 +86,7 @@ class PostDaoMysql implements PostDao
         //3.1 retornar array com objetos
         $posts = [];
         $userDao = new UserDaoMysql($this->pdo);
+        $postLikeDao = new PostLikeDaoMysql($this->pdo);
 
         foreach ($post_list as $post_item) {
             $newPost = new Post();
@@ -105,8 +104,8 @@ class PostDaoMysql implements PostDao
             $newPost->user = $userDao->findById($post_item['id_user']);
 
             // Informações sobre likes
-            $newPost->likeCount = 0;
-            $newPost->liked = false;
+            $newPost->likeCount = $postLikeDao->getLikeCount($newPost->id);
+            $newPost->liked = $postLikeDao->isLiked($newPost->id, $id_user);
 
             // Informações sobre COMMENTS
             $newPost->comments = [];
