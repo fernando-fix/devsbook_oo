@@ -387,8 +387,47 @@ header .head-side {
     gap:10px;
     margin:20px;
 }
+
 .full-user-photos .user-photo-item {
     margin:0;
+}
+
+.config-form {
+    margin-top: 10px;
+}
+
+.config-form label {
+    display: block;
+    padding: 10px 0px 5px 0px;
+    font-size: 15px;
+    font-weight: bolder;
+}
+
+.button {
+    border: 0;
+    padding: 10px 20px;
+    background-color: #4a76a8;
+    border-radius: 10px;
+    color: #fff;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: bolder;
+}
+
+.config-form hr {
+    margin-top: 10px;
+}
+
+.config-form input {
+    font-size: 14px;
+    width: 100%;
+    max-width: 500px;
+    padding: 10px 15px;
+}
+
+.config-form .mini {
+    display: block;
+    max-height: 100px;
 }
 
 @media (max-width: 992px) {
