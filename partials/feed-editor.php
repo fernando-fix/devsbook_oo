@@ -10,6 +10,10 @@ $firstName = current(explode(' ', $userInfo->name));
             </div>
             <div class="feed-new-input-placeholder">O que você está pensando, <?= $firstName; ?>?</div>
             <div class="feed-new-input" contenteditable="true"></div>
+            <div class="feed-new-photo">
+                <img src="assets/images/photo.png" />
+                <input type="file" name="photo" id="photo" class="feed-new-file" accept="image/png,image/jpeg,image/jpg">
+            </div>
             <div class="feed-new-send">
                 <img src="assets/images/send.png" />
             </div>
@@ -24,8 +28,31 @@ $firstName = current(explode(' ', $userInfo->name));
     let feedInput = document.querySelector('.feed-new-input');
     let feedSubmit = document.querySelector('.feed-new-send');
     let feedForm = document.querySelector('.feed-new-form');
+    let feedPhoto = document.querySelector('.feed-new-photo');
+    let feedFile = document.querySelector('.feed-new-file');
 
-    feedSubmit.addEventListener('click', function(){
+    feedPhoto.addEventListener('click', function() {
+        feedFile.click();
+    });
+    feedFile.addEventListener('change', async function() {
+        let photo = feedFile.files[0];
+        let formData = new FormData();
+
+        formData.append('photo', photo);
+        let req = await fetch('ajax_upload.php', {
+            method: 'POST',
+            body: formData
+        });
+        let json = await req.json();
+
+        if (json.error != '') {
+            alert(json.error);
+        }
+
+        window.location.href = window.location.href;
+    });
+
+    feedSubmit.addEventListener('click', function() {
         let value = feedInput.innerText.trim();
 
         feedForm.querySelector('input[name=body]').value = value;
