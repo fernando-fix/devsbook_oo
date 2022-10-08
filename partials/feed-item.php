@@ -41,25 +41,21 @@ switch ($item->type) {
         </div>
         <div class="feed-item-comments">
 
-            <!-- <div class="fic-item row m-height-10 m-width-20">
-                <div class="fic-item-photo">
-                    <a href=""><img src="media/avatars/avatar.jpg" /></a>
-                </div>
-                <div class="fic-item-info">
-                    <a href="">Bonieky Lacerda</a>
-                    Comentando no meu próprio post
-                </div>
-            </div>
+            <div class="feed-item-comments-area">
+                <?php foreach ($item->comments as $comment) : ?>
 
-            <div class="fic-item row m-height-10 m-width-20">
-                <div class="fic-item-photo">
-                    <a href=""><img src="media/avatars/avatar.jpg" /></a>
-                </div>
-                <div class="fic-item-info">
-                    <a href="">Bonieky Lacerda</a>
-                    Muito legal, parabéns!
-                </div>
-            </div> -->
+                    <div class="fic-item row m-height-10 m-width-20">
+                        <div class="fic-item-photo">
+                            <a href="<?= $base; ?>/perfil.php?id=<?=$comment->user->id; ?>"><img src="<?= $base; ?>/media/avatars/<?=$comment->user->avatar; ?>" /></a>
+                        </div>
+                        <div class="fic-item-info">
+                            <a href=""><?=$comment->user->name; ?></a>
+                            <?=$comment->body; ?>
+                        </div>
+                    </div>
+
+                <?php endforeach; ?>
+            </div>
 
             <div class="fic-answer row m-height-10 m-width-20">
                 <div class="fic-item-photo">
