@@ -69,20 +69,37 @@ class PostDaoMysql implements PostDao
     {
         $array = [];
 
+        //paginação
+        $perPage = 5; //qtdd por página
+        $page = intval(filter_input(INPUT_GET, 'p'));
+                if($page < 1) {
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage; //a partir de qual post vai mostrar
+
         // 1.pegar a lista de usuarios que eu sigo
         $urDao = new UserRelationDaoMysql($this->pdo);
         $userList = $urDao->getFollowing($id_user);
         $userList[] = $id_user;
 
         // 2.pegar os posts desses usuários ordenado pela data
-        $sql = $this->pdo->query("SELECT * FROM posts WHERE id_user IN (" . implode(',', $userList) . ") ORDER BY created_at DESC");
+        $sql = $this->pdo->query("SELECT * FROM posts WHERE id_user IN (" . implode(',', $userList) . ") ORDER BY created_at DESC, id DESC LIMIT $offset,$perPage");
 
         if ($sql->rowCount() > 0) {
             $data = $sql->fetchAll(PDO::FETCH_ASSOC);
 
             // 3.transformar o resultado em objetos e exibir
-            $array = $this->_postListToObject($data, $id_user);
+            $array['feed'] = $this->_postListToObject($data, $id_user);
         }
+
+        //Pegar o total de posts
+        $sql = $this->pdo->prepare("SELECT COUNT(*) as c FROM posts WHERE id_user IN (" . implode(',', $userList) . ")");
+        $sql->execute();
+        $totalData = $sql->fetch();
+        $total = $totalData['c'];
+
+        $array['pages'] = ceil($total / $perPage);
+        $array['currentPage'] = $page;
 
         return $array;
     }
