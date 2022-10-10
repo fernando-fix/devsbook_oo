@@ -37,6 +37,29 @@
     height:20px;
 }
 
+.feed-item-more-window {
+    position: absolute;
+    background-color: #fff;
+    width: 150px;
+    padding: 5px;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    margin-left: -130px;
+    text-align: center;
+    display: none;
+}
+
+.feed-item-more-window a {
+    display: block;
+    padding: 7px;
+    text-decoration: none;
+    color: #000;
+}
+
+.feed-item-more-window:hover {
+    background-color: #ccc;
+}
+
 .feed-item-body {
     color:#333;
     line-height: 20px;

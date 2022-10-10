@@ -28,9 +28,14 @@ switch ($item->type) {
                 <br />
                 <span class="fidi-date"><?= date('d/m/Y', strtotime($item->created_at)); ?></span>
             </div>
-            <div class="feed-item-head-btn">
-                <img src="assets/images/more.png" />
-            </div>
+            <?php if ($item->mine) : ?>
+                <div class="feed-item-head-btn">
+                    <img src="assets/images/more.png" />
+                    <div class="feed-item-more-window">
+                        <a href="<?= $base ?>/excluir_post_action.php?id=<?= $item->id ?>">Excluir post</a>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="feed-item-body mt-10 m-width-20">
             <?php
@@ -38,9 +43,9 @@ switch ($item->type) {
                 case 'text':
                     echo nl2br($item->body);
                     break;
-            
+
                 case 'photo':
-                    echo '<img src="'.$base.'/media/uploads/'.$item->body.'">';
+                    echo '<img src="' . $base . '/media/uploads/' . $item->body . '">';
                     break;
             }
             ?>
@@ -56,11 +61,11 @@ switch ($item->type) {
 
                     <div class="fic-item row m-height-10 m-width-20">
                         <div class="fic-item-photo">
-                            <a href="<?= $base; ?>/perfil.php?id=<?=$comment->user->id; ?>"><img src="<?= $base; ?>/media/avatars/<?=$comment->user->avatar; ?>" /></a>
+                            <a href="<?= $base; ?>/perfil.php?id=<?= $comment->user->id; ?>"><img src="<?= $base; ?>/media/avatars/<?= $comment->user->avatar; ?>" /></a>
                         </div>
                         <div class="fic-item-info">
-                            <a href=""><?=$comment->user->name; ?></a>
-                            <?=$comment->body; ?>
+                            <a href=""><?= $comment->user->name; ?></a>
+                            <?= $comment->body; ?>
                         </div>
                     </div>
 
