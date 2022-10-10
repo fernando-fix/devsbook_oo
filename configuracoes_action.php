@@ -115,6 +115,13 @@ if ($name && $email) {
 
             imagejpeg($finalImage, './media/avatars/' . $avatarName, 100);
 
+            if($userInfo->avatar != 'default.jpg') {
+                $delOldAvatar = 'media/avatars/'.$userInfo->avatar;
+                if(file_exists($delOldAvatar)) {
+                    unlink($delOldAvatar);
+                }
+            }
+
             $userInfo->avatar = $avatarName;
         }
     }
@@ -173,6 +180,13 @@ if ($name && $email) {
             $coverName = md5(time() . rand(0, 9999)) . '.jpg';
 
             imagejpeg($finalImage, './media/covers/' . $coverName, 100);
+
+            if($userInfo->cover != 'default.jpg') {
+                $delOldCover = 'media/covers/'.$userInfo->cover;
+                if(file_exists($delOldCover)) {
+                    unlink($delOldCover);
+                }
+            }
 
             $userInfo->cover = $coverName;
         }
