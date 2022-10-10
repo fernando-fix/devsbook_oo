@@ -41,7 +41,7 @@ if ($page < 1) {
 }
 
 // Pegar o feed do usuário
-$info = $postDao->getUserFeed($id, $page);
+$info = $postDao->getUserFeed($id, $page, $userInfo->id);
 $feed = $info['feed'];
 $pages = $info['pages'];
 $currentPage = $info['currentPage'];

@@ -65,7 +65,7 @@ class PostDaoMysql implements PostDao
         return true;
     }
 
-    public function getHomeFeed($id_user, $page=1)
+    public function getHomeFeed($id_user, $page=1, $logged_user)
     {
         $array = ['feed'=>[]];
         $perPage = 4; //qtdd por página
@@ -83,7 +83,7 @@ class PostDaoMysql implements PostDao
             $data = $sql->fetchAll(PDO::FETCH_ASSOC);
 
             // 3.transformar o resultado em objetos e exibir
-            $array['feed'] = $this->_postListToObject($data, $id_user);
+            $array['feed'] = $this->_postListToObject($data, $id_user, $logged_user);
         }
 
         //Pegar o total de posts
@@ -98,7 +98,7 @@ class PostDaoMysql implements PostDao
         return $array;
     }
 
-    public function getUserFeed($id_user, $page=1)
+    public function getUserFeed($id_user, $page=1, $logged_user)
     {
         $array = ['feed'=>[]];
         $perPage = 4; //qtdd por página
@@ -109,7 +109,7 @@ class PostDaoMysql implements PostDao
         $sql->execute();
         if ($sql->rowCount() > 0) {
             $data = $sql->fetchAll(PDO::FETCH_ASSOC);
-            $array['feed'] = $this->_postListToObject($data, $id_user);
+            $array['feed'] = $this->_postListToObject($data, $id_user, $logged_user);
         }
 
         //Pegar o total de posts
@@ -142,7 +142,7 @@ class PostDaoMysql implements PostDao
     }
 
 
-    private function _postListToObject($post_list, $id_user)
+    private function _postListToObject($post_list, $id_user, $logged_user=0)
     {
         //3.1 retornar array com objetos
         $posts = [];
@@ -158,7 +158,7 @@ class PostDaoMysql implements PostDao
             $newPost->body = $post_item['body'];
             $newPost->mine = false;
 
-            if ($id_user == $post_item['id_user']) {
+            if ($post_item['id_user'] == $logged_user) {
                 $newPost->mine = true;
             }
 
@@ -167,7 +167,7 @@ class PostDaoMysql implements PostDao
 
             // Informações sobre likes
             $newPost->likeCount = $postLikeDao->getLikeCount($newPost->id);
-            $newPost->liked = $postLikeDao->isLiked($newPost->id, $id_user);
+            $newPost->liked = $postLikeDao->isLiked($newPost->id, $logged_user);
 
             // Informações sobre COMMENTS
             $newPost->comments = $postCommentDao->getComments($newPost->id);

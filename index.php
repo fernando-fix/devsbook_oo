@@ -15,7 +15,7 @@ if ($page < 1) {
 }
 
 $postDao = new PostDaoMysql($pdo);
-$info = $postDao->getHomeFeed($userInfo->id, $page);
+$info = $postDao->getHomeFeed($userInfo->id, $page, $userInfo->id);
 $feed = $info['feed'];
 $pages = $info['pages'];
 $currentPage = $info['currentPage'];
