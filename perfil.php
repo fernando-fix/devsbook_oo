@@ -139,7 +139,7 @@ require 'partials/menu.php';
                             <div class="friend-icon">
                                 <a href="<?= $base; ?>/perfil.php?id=<?= $item->id; ?>">
                                     <div class="friend-icon-avatar">
-                                        <img src="<?= $base; ?>/media/avatars/default.jpg" />
+                                        <img src="<?= $base; ?>/media/avatars/<?=$item->avatar?>" />
                                     </div>
                                     <div class="friend-icon-name">
                                         <?= $item->name; ?>
