@@ -7,8 +7,8 @@ class User {
     public $birthdate;
     public $city;
     public $work;
-    public $avatar = 'default';
-    public $cover = 'default';
+    public $avatar = 'default.jpg';
+    public $cover = 'default.jpg';
     public $token;
 }
 
