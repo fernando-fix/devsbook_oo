@@ -65,16 +65,10 @@ class PostDaoMysql implements PostDao
         return true;
     }
 
-    public function getHomeFeed($id_user)
+    public function getHomeFeed($id_user, $page=1)
     {
-        $array = [];
-
-        //paginação
-        $perPage = 5; //qtdd por página
-        $page = intval(filter_input(INPUT_GET, 'p'));
-                if($page < 1) {
-            $page = 1;
-        }
+        $array = ['feed'=>[]];
+        $perPage = 4; //qtdd por página
         $offset = ($page - 1) * $perPage; //a partir de qual post vai mostrar
 
         // 1.pegar a lista de usuarios que eu sigo
@@ -104,17 +98,29 @@ class PostDaoMysql implements PostDao
         return $array;
     }
 
-    public function getUserFeed($id_user)
+    public function getUserFeed($id_user, $page=1)
     {
-        $array = [];
+        $array = ['feed'=>[]];
+        $perPage = 4; //qtdd por página
+        $offset = ($page - 1) * $perPage; //a partir de qual post vai mostrar
 
-        $sql = $this->pdo->prepare("SELECT * FROM posts WHERE id_user = :id_user ORDER BY created_at DESC");
+        $sql = $this->pdo->prepare("SELECT * FROM posts WHERE id_user = :id_user ORDER BY created_at DESC LIMIT $offset,$perPage");
         $sql->bindValue(':id_user', $id_user);
         $sql->execute();
         if ($sql->rowCount() > 0) {
             $data = $sql->fetchAll(PDO::FETCH_ASSOC);
-            $array = $this->_postListToObject($data, $id_user);
+            $array['feed'] = $this->_postListToObject($data, $id_user);
         }
+
+        //Pegar o total de posts
+        $sql = $this->pdo->prepare("SELECT COUNT(*) as c FROM posts WHERE id_user = :id_user");
+        $sql->bindValue(':id_user', $id_user);
+        $sql->execute();
+        $totalData = $sql->fetch();
+        $total = $totalData['c'];
+
+        $array['pages'] = ceil($total / $perPage);
+        $array['currentPage'] = $page;
 
         return $array;
     }

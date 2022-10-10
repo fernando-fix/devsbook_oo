@@ -34,9 +34,17 @@ $dateFrom = new DateTime($user->birthdate);
 $dateTo = new DateTime('today');
 $user->ageYears = $dateFrom->diff($dateTo)->y;
 
+//pegar informações de página
+$page = intval(filter_input(INPUT_GET, 'p'));
+if ($page < 1) {
+    $page = 1;
+}
 
 // Pegar o feed do usuário
-$feed = $postDao->getUserFeed($id);
+$info = $postDao->getUserFeed($id, $page);
+$feed = $info['feed'];
+$pages = $info['pages'];
+$currentPage = $info['currentPage'];
 
 // Verificar se o usuário logado segue o usuário
 $isFollowing = $userRelationDao->isFollowing($userInfo->id, $id);
@@ -64,7 +72,7 @@ require 'partials/menu.php';
                     <div class="profile-info-data row">
                         <?php if ($id != $userInfo->id) : ?>
                             <div class="profile-info-item m-width-20">
-                                <a href="follow_action.php?id=<?=$id?>" class="button"><?= $isFollowing ? 'Deixar de Seguir' : 'Seguir' ?></a>
+                                <a href="follow_action.php?id=<?= $id ?>" class="button"><?= $isFollowing ? 'Deixar de Seguir' : 'Seguir' ?></a>
                             </div>
                         <?php endif ?>
                         <div class="profile-info-item m-width-20">
@@ -162,15 +170,15 @@ require 'partials/menu.php';
 
                     <?php if (count($user->photos) > 0) : ?>
                         <?php foreach ($user->photos as $key => $item) : ?>
-                            <?php if($key < 4): ?>
-                            <div class="user-photo-item">
-                                <a href="#modal-<?= $key; ?>" data-modal-open>
-                                    <img src="<?= $base; ?>/media/uploads/<?= $item->body; ?>" />
-                                </a>
-                                <div id="modal-<?= $key; ?>" style="display:none">
-                                    <img src="<?= $base; ?>/media/uploads/<?= $item->body; ?>" />
+                            <?php if ($key < 4) : ?>
+                                <div class="user-photo-item">
+                                    <a href="#modal-<?= $key; ?>" data-modal-open>
+                                        <img src="<?= $base; ?>/media/uploads/<?= $item->body; ?>" />
+                                    </a>
+                                    <div id="modal-<?= $key; ?>" style="display:none">
+                                        <img src="<?= $base; ?>/media/uploads/<?= $item->body; ?>" />
+                                    </div>
                                 </div>
-                            </div>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -185,6 +193,12 @@ require 'partials/menu.php';
                 <?php foreach ($feed as $item) : ?>
                     <?php require 'partials/feed-item.php'; ?>
                 <?php endforeach; ?>
+
+                <div class="feed-pagination">
+                    <?php for ($i = 1; $i <= $pages; $i++) : ?>
+                        <a class="<?= $currentPage == $i ? 'active' : '' ?>" href="<?= $base ?>/perfil.php?id=<?= $id ?>&p=<?= $i ?>"><?= $i ?></a>
+                    <?php endfor ?>
+                </div>
 
             <?php else : ?>
                 Não há postagens para este usuário.
