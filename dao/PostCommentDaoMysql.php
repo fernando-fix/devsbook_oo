@@ -2,7 +2,8 @@
 require_once 'models/PostComment.php';
 require_once 'dao/UserDaoMysql.php';
 
-class PostCommentDaoMysql implements PostCommentDao{
+class PostCommentDaoMysql implements PostCommentDao
+{
     private $pdo;
 
     public function __construct(PDO $driver)
@@ -38,12 +39,19 @@ class PostCommentDaoMysql implements PostCommentDao{
         return $array;
     }
 
-    public function addComment(PostComment $pc) {
+    public function addComment(PostComment $pc)
+    {
         $sql = $this->pdo->prepare("INSERT INTO postcomments (id_post, id_user, created_at, body) VALUES (:id_post, :id_user, :created_at, :body)");
         $sql->bindValue(':id_post', $pc->id_post);
         $sql->bindValue(':id_user', $pc->id_user);
         $sql->bindValue(':created_at', $pc->created_at);
         $sql->bindValue(':body', $pc->body);
+        $sql->execute();
+    }
+
+    public function deleteFromPost($id_post) {
+        $sql = $this->pdo->prepare("DELETE FROM postcomments WHERE id_post = :id_post");
+        $sql->bindValue(':id_post', $id_post);
         $sql->execute();
     }
 }

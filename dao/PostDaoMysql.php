@@ -26,13 +26,41 @@ class PostDaoMysql implements PostDao
         $sql->execute();
 
         return true;
-    }
+    }   
 
-    public function delete($id_post, $id_user) {
-        $sql = $this->pdo->prepare("DELETE FROM posts WHERE id = :id_post AND id_user = :id_user");
+    public function delete($id_post, $id_user)
+    {
+        $postLikeDao = new PostLikeDaoMysql($this->pdo);
+        $postCommentDao = new PostCommentDaoMysql($this->pdo);
+
+        //1. Verificar se o post existe
+        $sql = $this->pdo->prepare("SELECT * FROM posts WHERE id = :id_post AND id_user = :id_user");
         $sql->bindValue(':id_post', $id_post);
         $sql->bindValue(':id_user', $id_user);
         $sql->execute();
+
+        if ($sql->rowCount() > 0) { //post existe
+            $post = $sql->fetch(PDO::FETCH_ASSOC);
+
+            //2. Deletar os likes e comments
+            $postLikeDao->deleteFromPost($id_post);
+            $postCommentDao->deleteFromPost($id_post);
+
+            //3. Deletar a eventual foto
+            if ($post['type'] === 'photo') {
+
+                $img = "media/uploads/".$post['body'];
+                if(file_exists($img)) {
+                    unlink($img);
+                }
+            }
+
+            //4. Deletar o post
+            $sql = $this->pdo->prepare("DELETE FROM posts WHERE id = :id_post AND id_user = :id_user");
+            $sql->bindValue(':id_post', $id_post);
+            $sql->bindValue(':id_user', $id_user);
+            $sql->execute();
+        }
 
         return true;
     }
@@ -54,7 +82,7 @@ class PostDaoMysql implements PostDao
 
             // 3.transformar o resultado em objetos e exibir
             $array = $this->_postListToObject($data, $id_user);
-        }      
+        }
 
         return $array;
     }
@@ -120,7 +148,7 @@ class PostDaoMysql implements PostDao
 
             // Informações sobre COMMENTS
             $newPost->comments = $postCommentDao->getComments($newPost->id);
-            
+
             $posts[] = $newPost;
         }
 
